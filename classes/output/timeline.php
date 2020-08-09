@@ -298,7 +298,7 @@ class timeline implements templatable, renderable {
         $behatsite = defined('BEHAT_SITE_RUNNING');
         $nonajaxcontrol = '';
         $ajaxcontrol = '';
-        $courseajaxenabled = course_ajax_enabled($course);
+        $courseajaxenabled = $this->course_ajax_enabled($course);
         $userchooserenabled = get_user_preferences('usemodchooser', $CFG->modchooserdefault);
 
         // Decide what combination of controls to output:
@@ -312,8 +312,7 @@ class timeline implements templatable, renderable {
             $vertical = !empty($displayoptions['inblock']);
 
             // Check to see if user can add menus.
-            if (!has_capability('moodle/course:manageactivities', context_course::instance($course->id))
-                || !$this->page->user_is_editing()) {
+            if (!has_capability('moodle/course:manageactivities', context_course::instance($course->id))) {
                 return '';
             }
 
@@ -383,19 +382,14 @@ class timeline implements templatable, renderable {
         if ($renderajaxcontrol) {
             // The module chooser link.
             $straddeither = get_string('addresourceoractivity');
-            $ajaxcontrol = html_writer::start_tag('div', array('class' => 'mdl-right'));
-            $ajaxcontrol .= html_writer::start_tag('div', array('class' => 'section-modchooser'));
             $icon = $this->output->pix_icon('t/add', '');
             $span = html_writer::tag('span', $straddeither, array('class' => 'section-modchooser-text'));
             $ajaxcontrol .= html_writer::tag('button', $icon . $span, [
-                    'class' => 'section-modchooser-link btn btn-link',
+                    'class' => 'section-modchooser-link section btn btn-success',
                     'data-action' => 'open-chooser',
                     'data-sectionid' => $section,
-                    'data-sectionreturnid' => $sectionreturn,
                 ]
             );
-            $ajaxcontrol .= html_writer::end_tag('div');
-            $ajaxcontrol .= html_writer::end_tag('div');
 
             // Load the JS for the modal.
             $this->course_activitychooser($course->id);
